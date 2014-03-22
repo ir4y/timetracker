@@ -26,7 +26,7 @@ stream(Data, Req, State) ->
 
     Parent = self(),
     case Function of
-        <<"subscribe_to">> -> subscriber:subscribe(lists:nth(1,Arguments), Uuid);
+        <<"subscribe_to">> -> subscriber:subscribe(lists:nth(1,Arguments), {Uuid, Parent});
         <<"unsubscribe">> -> subscriber:unsubscribe(lists:nth(1,Arguments));
         _ -> erlang:spawn(fun() ->
                          Msg = #celery_msg{task=Function, args=Arguments},
