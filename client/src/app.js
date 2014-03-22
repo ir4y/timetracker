@@ -1,0 +1,2 @@
+App = angular.module("TimeTrackerApp", []);
+
