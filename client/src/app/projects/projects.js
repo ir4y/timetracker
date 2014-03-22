@@ -1,7 +1,7 @@
 TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
     $stateProvider
     .state('root.projects', {
-        url: 'projects/',
+        url: 'projects/:start_date/:end_date/',
         resolve: {
             projects: function($rpc){
                 return $rpc.send('tasks.get_projects_list', {}).then(
@@ -12,6 +12,18 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
             },
             users: function($rpc){
                 return $rpc.send('tasks.get_users_list', {}).then(
+                    function(response) {
+                        return response.result;
+                    }
+                );
+            },
+            actions: function($rpc, $stateParams){
+                var start_date = new Date(parseInt($stateParams.start_date)),
+                    end_date = new Date(parseInt($stateParams.end_date));
+                return $rpc.send('tasks.get_actions_list', {
+                    from_time: start_date.toISOString(), 
+                    to_time: end_date.toISOString() 
+                }).then(
                     function(response) {
                         return response.result;
                     }
@@ -31,7 +43,7 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
                             end_date = new Date(end_date),
                             i = 0;
                         var time_list = [];
-                        for(i = 0;  (new Date(start_date.getTime()-i*60*1000) > end_date); i += interval) {
+                        for(i = 0; (new Date(start_date.getTime()-i*60*1000) > end_date); i += interval) {
                            time_list.push({
                                start_date: new Date( start_date.getTime()-i*60*1000), 
                                end_date: new Date(start_date.getTime()-(i+interval)*60*1000)
