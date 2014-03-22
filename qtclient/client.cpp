@@ -120,7 +120,7 @@ void Client::sendScreen()
     document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
     document.insert("image", QJsonValue::fromVariant(image_url));
     QByteArray data = QJsonDocument(document).toJson();
-    QString url = this->server_address + "/api/screen/";
+    url = this->server_address + "/api/screen/";
 
     this->request_post(url, data);
 }

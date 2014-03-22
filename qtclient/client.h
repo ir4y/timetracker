@@ -18,12 +18,6 @@
 #include <QBuffer>
 #include <QScreen>
 
-struct ScreenData
-{
-    QDateTime stamp;
-    QPixmap image;
-};
-
 
 class Client : public QObject
 {
@@ -72,8 +66,6 @@ private:
     QNetworkAccessManager* manager;
     QString sessionId;
     QString server_address;
-
-    ScreenData data;
 
     // ids
     QString current_project;
