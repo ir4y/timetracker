@@ -1,6 +1,8 @@
 TimeTrackerApp = angular.module("TimeTrackerApp", ['ui.router']);
 
-TimeTrackerApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+TimeTrackerApp.config(
+    ['$stateProvider', '$urlRouterProvider', '$locationProvider', 
+    function ($stateProvider, $urlRouterProvider, $locationProvider) {
     //$locationProvider.html5Mode(true);
     $urlRouterProvider.otherwise('/projects/list/');
 
