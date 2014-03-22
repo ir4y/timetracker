@@ -30,7 +30,7 @@ Client::Client(QString server_address, QString _name, QString _password, QObject
 void Client::timer_slot()
 {
     this->timer->stop();
-    this->sendScreen();
+    this->send_action("screenshot");
     this->timer->start(PERIODIC_TIME_DEFAULT);
 }
 
@@ -94,7 +94,6 @@ QByteArray Client::request_post(QString url, QByteArray &data, QString content_t
 
     QByteArray result = reply->readAll();
     return result;
-
 }
 
 // first, change status
@@ -111,7 +110,7 @@ void Client::change_status(QString action)
 }
 
 // second, send photo
-void Client::sendScreen()
+void Client::send_action(QString action)
 {
     if (this->current_task.length() == 0)
         return;
@@ -126,13 +125,11 @@ void Client::sendScreen()
     QString url = this->server_address + "/api/upload/";
     QString image_url = this->request_post(url, buffer_data, "image/png");
 
-    qDebug() << image_url;
-
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
     document.insert("user", QJsonValue::fromVariant(this->session_id));
     document.insert("image", QJsonValue::fromVariant(image_url));
-    document.insert("action", QJsonValue::fromVariant("screenshot"));
+    document.insert("action", QJsonValue::fromVariant(action));
     QByteArray data = QJsonDocument(document).toJson();
     url = this->server_address + "/api/action/";
 
@@ -245,18 +242,6 @@ void Client::suspend()
     }
 
     this->send_action(next_state);
-}
-
-void Client::send_action(QString action)
-{
-    QJsonObject document;
-    document.insert("task", QJsonValue::fromVariant(this->current_task));
-    document.insert("user", QJsonValue::fromVariant(this->session_id));
-    document.insert("action", QJsonValue::fromVariant(action));
-    QByteArray data = QJsonDocument(document).toJson();
-    QString url = this->server_address + "/api/action/";
-
-    this->request_post(url, data);
 }
 
 Client* client = NULL;

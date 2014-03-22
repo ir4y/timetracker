@@ -4,21 +4,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject(parent)
 {
     this->icon_menu = new QMenu();
-    this->suspend_resume_action = new QAction(tr("Suspend"), this);
+    this->suspend_resume_action = new QAction(tr("Приостановить"), this);
     connect(this->suspend_resume_action, SIGNAL(triggered()), this, SLOT(suspend_resume()));
     this->icon_menu->addAction(this->suspend_resume_action);
 
-    QAction* task_select_action = new QAction(tr("Select task"), this);
+    QAction* task_select_action = new QAction(tr("Выбрать задачу"), this);
     connect(task_select_action, SIGNAL(triggered()), this, SLOT(task_select()));
     this->icon_menu->addAction(task_select_action);
 
-    QAction* change_user_action = new QAction(tr("Change user"), this);
+    QAction* change_user_action = new QAction(tr("Смена пользователя"), this);
     connect(change_user_action, SIGNAL(triggered()), this, SLOT(change_user()));
     this->icon_menu->addAction(change_user_action);
 
     this->icon_menu->addSeparator();
 
-    QAction* quit_action = new QAction(tr("Quit"), this);
+    QAction* quit_action = new QAction(tr("Выход"), this);
     connect(quit_action, SIGNAL(triggered()), this, SLOT(quit()));
     this->icon_menu->addAction(quit_action);
 
@@ -36,9 +36,9 @@ void MainWindow::suspend_resume()
 {
     client->suspend();
     if (client->is_active())
-        this->suspend_resume_action->setText("Suspend");
+        this->suspend_resume_action->setText(tr("Приостановить"));
     else
-        this->suspend_resume_action->setText("Resume");
+        this->suspend_resume_action->setText(tr("Возобновить"));
 }
 
 void MainWindow::task_select()
@@ -106,7 +106,8 @@ bool MainWindow::authorization_loop()
         if (client)
             delete client;
 
-        client = new Client("http://127.0.0.1:5000", login, password);
+        QString server_address = settings.value("server", "http://127.0.0.1:5000").toString();
+        client = new Client(server_address, login, password);
         if (client->is_authenticated())
         {
             settings.setValue("login", login);

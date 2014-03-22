@@ -29,7 +29,6 @@ public:
     explicit Client(QString server_address, QString name, QString password, QObject *parent = 0);
 
     void authenticate();
-    void sendScreen(); // 1 - upload image; 2 - send data
     void updateTask(QString project, QString task);
     void suspend();
     void change_status(QString action);
