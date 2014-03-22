@@ -1,6 +1,6 @@
 from celery import Celery
 from app import app as flask_app
-from app import User, Project, Task
+from app import User, Project, Task, Action
 
 
 def make_celery(app):
@@ -48,3 +48,27 @@ def get_users_list():
 @as_list
 def get_tasks_for_project(project_id):
     return Task.objects.filter(project=project_id)
+
+
+@celery.task
+@as_list
+def get_actions_list(from_time, to_time):
+    return Action.objects.filter(created__gte=from_time,
+                                 created__lte=to_time)
+
+
+@celery.task
+@as_list
+def get_actions_for_task(task_id, from_time, to_time):
+    return Action.objects.filter(task=task_id,
+                                 created__gte=from_time,
+                                 created__lte=to_time)
+
+
+@celery.task
+@as_list
+def get_actions_for_project(project_id, from_time, to_time):
+    return Action.objects.filter(
+        task__in=Task.objects.filter(project=project_id),
+        created__gte=from_time,
+        created__lte=to_time)
