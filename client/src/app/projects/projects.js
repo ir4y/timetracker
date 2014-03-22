@@ -1,19 +1,22 @@
-MainApp.config(['$stateProvider', function($stateProvider) ->
-    $stateProvider.state('projects',{
+TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
+    $stateProvider
+    .state('main.projects', {
         abstract: true,
         url: 'projects/',
-        resolve: function(){
-            return [];
-        } 
-    })
-    .state('projects.list', {
-        url: 'list/',
         views: {
             'content': {
+                controller: function($scope) { console.log($scope); },
+                template: '<div ui-view></div>'
+            }
+        }
+    })
+    .state('main.projects.list', {
+        url: 'list/',
+        views: {
+            '': {
                 templateUrl: '/src/app/projects/templates/projects-list.html',
                 controller: 'ProjectsListCtrl',
             }
         }
-    }
-    );
-]);
+    });
+}]);
