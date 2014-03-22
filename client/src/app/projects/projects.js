@@ -5,7 +5,7 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         url: 'projects/',
         views: {
             'content': {
-                template: '<div ui-view></div>'
+                templateUrl: '/static/src/app/projects/templates/projects-base.html',
             }
         }
     })
@@ -13,7 +13,7 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         url: 'list/',
         views: {
             '': {
-                template: '/src/app/projects/templates/projects-list.html',
+                templateUrl: '/static/src/app/projects/templates/projects-list.html',
                 controller: 'ProjectsListCtrl',
             }
         }
