@@ -33,7 +33,7 @@ class Project(db.Document):
 class Task(db.Document):
     project = db.ReferenceField('Project')
     title = db.StringField()
-    compleated = db.BooleanField(default=False)
+    completed = db.BooleanField(default=False)
 
 
 ACTION_CHOICES = (
