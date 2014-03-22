@@ -20,10 +20,10 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
             actions: function($rpc, $stateParams){
                 var start_date = new Date(parseInt($stateParams.start_date)),
                     end_date = new Date(parseInt($stateParams.end_date));
-                return $rpc.send('tasks.get_actions_list', {
-                    from_time: start_date.toISOString(), 
-                    to_time: end_date.toISOString() 
-                }).then(
+                return $rpc.send('tasks.get_actions_list', [
+                    start_date.toISOString(), 
+                    end_date.toISOString() 
+                ]).then(
                     function(response) {
                         return response.result;
                     }
