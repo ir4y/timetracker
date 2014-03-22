@@ -89,6 +89,10 @@ class Action(db.Document):
         else:
             return None
 
+    meta = {
+        'ordering': ['-created']
+    }
+
 
 class UserIdAuthentication(AuthenticationBase):
     def authorized(self):
