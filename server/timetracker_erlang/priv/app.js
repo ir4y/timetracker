@@ -11,7 +11,7 @@ app.controller('MainCtrl', ['$scope', '$rpc',  function($scope, $rpc) {
     $scope.result = 0;
 
     $scope.add = function() {
-        $rpc.send('add', [ parseInt($scope.first), parseInt($scope.second) ]).then(
+        $rpc.send('tasks.add', [ parseInt($scope.first), parseInt($scope.second) ]).then(
             function(response) {
                 console.log('Success', response); 
                 $scope.result = response.result;
@@ -22,7 +22,7 @@ app.controller('MainCtrl', ['$scope', '$rpc',  function($scope, $rpc) {
         );
     }
     $scope.add_delay = function() {
-        $rpc.send('add_delay', [ parseInt($scope.first), parseInt($scope.second) ]).then(
+        $rpc.send('tasks.add_delay', [ parseInt($scope.first), parseInt($scope.second) ]).then(
             function(response) {
                 console.log('Success', response); 
                 $scope.result = response.result;

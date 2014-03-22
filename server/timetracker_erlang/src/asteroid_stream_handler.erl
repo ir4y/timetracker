@@ -9,10 +9,9 @@
 
 -record(state, {rpc_handlers}).
 
-init(_Transport, Req, Opts, _Active) ->
+init(_Transport, Req, _Opts, _Active) ->
 	io:format("bullet init~n"),
-    RpcHandlers = proplists:get_value(rpc_handlers, Opts),
-	{ok, Req, #state{rpc_handlers=RpcHandlers}}.
+	{ok, Req, #state{}}.
 
 stream(<<"ping">>, Req, State) ->
 	{reply,

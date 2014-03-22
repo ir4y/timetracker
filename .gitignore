@@ -1,5 +1,5 @@
 *sublime*
-priv/bower_components/
+server/timetracker_erlang/priv/bower_components/
 .eunit
 deps
 *.o
