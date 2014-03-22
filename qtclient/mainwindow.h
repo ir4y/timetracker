@@ -20,7 +20,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     static bool authorization_loop();
 
-private slots:
+public slots:
     void suspend_resume();
     void task_select();
     void quit();

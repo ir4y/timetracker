@@ -13,5 +13,8 @@ int main(int argc, char *argv[])
         return 0;
 
     MainWindow window;
+    if (client->get_current_task().length() == 0)
+        window.task_select();
+
     return a.exec();
 }

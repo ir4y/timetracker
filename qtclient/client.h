@@ -43,6 +43,8 @@ public:
     QStringList get_projects_list() { return this->projects.values(); }
     QStringList get_tasks_list() { return this->tasks.values(); }
 
+    void send_action(QString action);
+
 signals:
     
 private slots:
@@ -54,7 +56,6 @@ private:
 
     void get_tasks();
     void get_projects();
-    void send_action(QString action);
 
     QString get_task_id_by_name(QString task_name, QString project_id);
     QString get_project_id_by_name(QString name);

@@ -61,6 +61,9 @@ void MainWindow::dialog_accepted()
 
 void MainWindow::quit()
 {
+    if (client->is_active())
+        client->send_action("suspend");
+
     QApplication::exit();
 }
 
@@ -89,6 +92,9 @@ bool MainWindow::authorization_loop()
             if (status == 0)
             {
                 QApplication::exit();
+                if (client->is_active())
+                    client->send_action("suspend");
+
                 return false;
             }
 

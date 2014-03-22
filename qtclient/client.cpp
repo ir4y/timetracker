@@ -20,6 +20,8 @@ Client::Client(QString server_address, QString _name, QString _password, QObject
 
         this->get_projects();
         this->get_tasks();
+
+        this->current_project = this->tasks_to_projects[this->current_task];
     }
 }
 
@@ -46,11 +48,6 @@ void Client::get_tasks()
         this->tasks[obj["id"].toString()] = obj["title"].toString();
         this->tasks_to_projects[obj["id"].toString()] = obj["project"].toString();
     }
-
-    if (this->tasks.count() > 0)
-        this->current_task = this->tasks.keys()[0];
-    else
-        this->current_task = "";
 }
 
 void Client::get_projects()
@@ -67,11 +64,6 @@ void Client::get_projects()
         QJsonObject obj = field.toObject();
         this->projects[obj["id"].toString()] = obj["title"].toString();
     }
-
-    if (this->projects.count() > 0)
-        this->current_project = this->projects.keys()[0];
-    else
-        this->current_project = "";
 }
 
 QByteArray Client::request_get(QString url)
@@ -119,6 +111,9 @@ void Client::change_status(QString action)
 // second, send photo
 void Client::sendScreen()
 {
+    if (this->current_task.length() == 0)
+        return;
+
     QPixmap image = QPixmap::grabWindow(QApplication::desktop()->winId());
 
     QByteArray buffer_data;
@@ -198,10 +193,8 @@ QString Client::get_task_id_by_name(QString task_name, QString project_id)
     QByteArray response = this->request_post(url, data);
 
     QJsonDocument document = QJsonDocument::fromJson(response);
-    QJsonObject object = document.object();
-    QJsonArray response_data = object["data"].toArray();
 
-    QString result = response_data[0].toObject()["id"].toString();
+    QString result = document.object()["id"].toString();
     this->tasks[result] = task_name;
     this->tasks_to_projects[result] = project_id;
     return result;
@@ -218,6 +211,8 @@ void Client::authenticate()
 
     QJsonDocument document = QJsonDocument::fromJson(response);
     this->session_id = document.object()["user_id"].toString();
+    this->current_task = document.object()["last_task_id"].toString();
+    qDebug() << this->current_task;
 }
 
 bool Client::is_authenticated()
