@@ -179,13 +179,17 @@ def upload():
 
 system_api = restful.Api(app)
 
+
 class LoginResource(restful.Resource):
     def post(self):
         try:
             user = User.objects.get(**json.loads(request.data))
+            last_action = Action.objects.filter(
+                user=user).order_by('-created').first()
             return {'user_id': str(user.id),
-                    'last_task_id': str(Action.objects.filter(
-                        user=user).order_by('-created').first().task.id)}
+                    'last_task_id': str(last_action.task.id)
+                                    if last_action
+                                    else None}
         except:
             return {'error': 'no such user'}, 400
 
