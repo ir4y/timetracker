@@ -1,4 +1,5 @@
 import datetime
+import json
 from flask import Flask
 from flask.ext import admin
 from flask.ext.admin.contrib.mongoengine import ModelView
@@ -8,6 +9,13 @@ from flask.ext.mongorest.views import ResourceView
 from flask.ext.mongorest.resources import Resource
 from flask.ext.mongorest import operators as ops
 from flask.ext.mongorest import methods
+from flask.ext.mongorest.utils import MongoEncoder
+from kombu.serialization import register
+
+def mongo_encoder(data):
+    return json.dumps(data, cls=MongoEncoder)
+
+register('mongo_json', mongo_encoder, json.loads, 'application/json')
 
 
 app = Flask(__name__)

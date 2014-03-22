@@ -1,8 +1,7 @@
-import json
 from celery import Celery
 from app import app as flask_app
 from app import Project
-from flask.ext.mongorest.utils import MongoEncoder
+
 
 def make_celery(app):
     celery = Celery(app.import_name, backend='amqp', broker=app.config['CELERY_BROKER_URL'])
@@ -10,7 +9,7 @@ def make_celery(app):
     celery.conf.update(
         CELERY_TASK_SERIALIZER='json',
         CELERY_ACCEPT_CONTENT=['json'],  # Ignore other content
-        CELERY_RESULT_SERIALIZER='json',
+        CELERY_RESULT_SERIALIZER='mongo_json',
         )
     TaskBase = celery.Task
     class ContextTask(TaskBase):
@@ -24,4 +23,4 @@ celery = make_celery(flask_app)
 
 @celery.task
 def get_projects_list():
-    return json.dumps(map(lambda u: u._data, Project.objects),cls=MongoEncoder)
+    return map(lambda u: u._data, Project.objects)
