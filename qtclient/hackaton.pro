@@ -27,3 +27,9 @@ HEADERS  += \
 FORMS += \
     taskselectdialog.ui \
     authorizationdialog.ui
+
+OTHER_FILES += \
+    icon.svg
+
+RESOURCES += \
+    resources.qrc

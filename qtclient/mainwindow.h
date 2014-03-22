@@ -6,8 +6,10 @@
 #include <QMenu>
 #include <QIcon>
 #include <QAction>
+#include <QMessageBox>
 
 #include "taskselectdialog.h"
+#include "authorizationdialog.h"
 
 class MainWindow : public QObject
 {
@@ -15,6 +17,7 @@ class MainWindow : public QObject
     
 public:
     explicit MainWindow(QWidget *parent = 0);
+    static void authorization_loop();
 
 private slots:
     void suspend_resume();
