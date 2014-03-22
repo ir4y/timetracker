@@ -179,15 +179,17 @@ def upload():
 
 system_api = restful.Api(app)
 
-class HelloWorld(restful.Resource):
+class LoginResource(restful.Resource):
     def post(self):
         try:
             user = User.objects.get(**json.loads(request.data))
-            return {'user_id': str(user.id)}
+            return {'user_id': str(user.id),
+                    'last_task_id': str(Action.objects.filter(
+                        user=user).order_by('-created').first().task.id)}
         except:
             return {'error': 'no such user'}, 400
 
-system_api.add_resource(HelloWorld, '/api/login/')
+system_api.add_resource(LoginResource, '/api/login/')
 
 admin = admin.Admin(app, 'Simple Models')
 admin.add_view(ModelView(User))
