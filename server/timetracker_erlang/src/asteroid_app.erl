@@ -13,7 +13,8 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
                 {'_', [{"/static/[...]", cowboy_static, {dir,"priv"}},
                        {"/bullet", bullet_handler,
-                        [{handler, asteroid_stream_handler}]}]}]),
+                        [{handler, asteroid_stream_handler}]},
+                       {"/", cowboy_static, {file, "priv/index.html"}}]}]),
     Ip = {0, 0, 0, 0},
     Port = 8008,
     {ok, _} = cowboy:start_http(
