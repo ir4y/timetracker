@@ -1,6 +1,7 @@
+from os.path import join
 import datetime
 import json
-from flask import Flask
+from flask import Flask, request
 from flask.ext import admin
 from flask.ext.admin.contrib.mongoengine import ModelView
 from flask.ext.mongoengine import MongoEngine
@@ -22,6 +23,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 app.config['MONGODB_SETTINGS'] = {'DB': 'timetracker'}
 app.config['CELERY_BROKER_URL'] = 'amqp://'
+app.config['UPLOAD_PATH'] = '/tmp/'
 
 db = MongoEngine(app)
 api = MongoRest(app)
@@ -65,7 +67,10 @@ class Action(db.Document):
     created = db.DateTimeField(default=datetime.datetime.now)
     action = db.StringField(choices=ACTION_CHOICES)
     user = db.ReferenceField('User')
-    image = db.StringField()
+    image = db.ReferenceField('Screenshot')
+
+class Screenshot(db.Document):
+    image = db.ImageField()
 
 
 class UserResource(Resource):
@@ -114,11 +119,28 @@ class ActionView(ResourceView):
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
 
+@app.route('/api/upload/', methods=['POST'])
+def upload():
+    new_file = join(
+        app.config['UPLOAD_PATH'],
+        datetime.datetime.now().strftime(
+            "%Y.%m.%d_%H:%M.png"))
+    file = open(new_file, "w")
+    file.write(request.data)
+    file.close()
+
+    screenshot = Screenshot()
+    screenshot.image.put(open(new_file))
+    screenshot.save()
+    return str(screenshot.id)
+
+
 admin = admin.Admin(app, 'Simple Models')
 admin.add_view(ModelView(User))
 admin.add_view(ModelView(Project))
 admin.add_view(ModelView(Task))
 admin.add_view(ModelView(Action))
+admin.add_view(ModelView(Screenshot))
 
 
 if __name__ == '__main__':

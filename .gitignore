@@ -12,3 +12,6 @@ Mnesia.nonode@nohost
 __pycache__
 *.pyc
 *.ropeproject*
+Makefile
+hackaton
+moc_*.cpp
