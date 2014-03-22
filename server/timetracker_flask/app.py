@@ -1,6 +1,7 @@
 from os.path import join
 import datetime
 import json
+import pytz
 from flask import Flask, request
 from flask.ext import admin
 from flask.ext import restful
@@ -12,13 +13,30 @@ from flask.ext.mongorest.views import ResourceView
 from flask.ext.mongorest.resources import Resource
 from flask.ext.mongorest import operators as ops
 from flask.ext.mongorest import methods
-from flask.ext.mongorest.utils import MongoEncoder
 from flask.ext.mongorest.authentication import AuthenticationBase
 from kombu.serialization import register
 
+from bson.dbref import DBRef
+from bson.objectid import ObjectId
+
+class TimezoneMongoEncoder(json.JSONEncoder):
+    def default(self, value, **kwargs):
+        if isinstance(value, ObjectId):
+            return unicode(value)
+        elif isinstance(value, DBRef):
+            return value.id
+        if isinstance(value, datetime.datetime):
+            value -= datetime.timedelta(hours=8)
+            return value.isoformat()
+        if isinstance(value, datetime.date):
+            return value.strftime("%Y-%m-%d")
+        if isinstance(value, decimal.Decimal):
+            return str(value)
+        return super(MongoEncoder, self).default(value, **kwargs)
+
 
 def mongo_encoder(data):
-    return json.dumps(data, cls=MongoEncoder)
+    return json.dumps(data, cls=TimezoneMongoEncoder)
 
 
 register('mongo_json', mongo_encoder, json.loads, 'application/json')
