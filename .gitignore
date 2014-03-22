@@ -1,2 +1,14 @@
 *sublime*
-client/node_modules
+client/node_modulesrebar
+priv/bower_components/
+.eunit
+deps
+*.o
+*.beam
+*.plt
+erl_crash.dump
+ebin
+Mnesia.nonode@nohost
+*.swp
+__pycache__
+*.pyc
