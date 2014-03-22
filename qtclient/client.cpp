@@ -108,7 +108,7 @@ void Client::change_status(QString action)
 {
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
-    document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
+    document.insert("user", QJsonValue::fromVariant(this->session_id));
     document.insert("action", QJsonValue::fromVariant(action));
     QByteArray data = QJsonDocument(document).toJson();
     QString url = this->server_address + "/api/action/";
@@ -133,7 +133,7 @@ void Client::sendScreen()
 
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
-    document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
+    document.insert("user", QJsonValue::fromVariant(this->session_id));
     document.insert("image", QJsonValue::fromVariant(image_url));
     document.insert("action", QJsonValue::fromVariant("screenshot"));
     QByteArray data = QJsonDocument(document).toJson();
@@ -254,7 +254,7 @@ void Client::send_action(QString action)
 {
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
-    document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
+    document.insert("user", QJsonValue::fromVariant(this->session_id));
     document.insert("action", QJsonValue::fromVariant(action));
     QByteArray data = QJsonDocument(document).toJson();
     QString url = this->server_address + "/api/action/";

@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QAction>
 #include <QMessageBox>
+#include <QSettings>
 
 #include "taskselectdialog.h"
 #include "authorizationdialog.h"
