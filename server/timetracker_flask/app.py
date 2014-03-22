@@ -24,16 +24,25 @@ class User(db.Document):
     email = db.StringField(max_length=40)
     password = db.StringField(max_length=40)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Project(db.Document):
     title = db.StringField()
     users = db.ListField(db.ReferenceField('User'))
+
+    def __unicode__(self):
+        return self.title
 
 
 class Task(db.Document):
     project = db.ReferenceField('Project')
     title = db.StringField()
     completed = db.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.title
 
 
 ACTION_CHOICES = (
@@ -61,10 +70,16 @@ class ProjectResource(Resource):
 
 class TaskResource(Resource):
     document = Task
+    filters = {
+        'project': [ops.Exact, ]
+    }
 
 
 class ActionResource(Resource):
     document = Action
+    filters = {
+        'task': [ops.Exact, ]
+    }
 
 
 @api.register(name='user', url='/api/user/')
