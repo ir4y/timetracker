@@ -69,6 +69,9 @@ void MainWindow::quit()
 
 void MainWindow::change_user()
 {
+    if (client->is_active())
+        client->send_action("suspend");
+
     QSettings settings;
     settings.remove("login");
     settings.remove("password");
@@ -92,9 +95,6 @@ bool MainWindow::authorization_loop()
             if (status == 0)
             {
                 QApplication::exit();
-                if (client->is_active())
-                    client->send_action("suspend");
-
                 return false;
             }
 
@@ -115,6 +115,8 @@ bool MainWindow::authorization_loop()
         }
         else
         {
+            settings.remove("login");
+            settings.remove("password");
             QMessageBox::warning(NULL, QObject::tr("Ошибка авторизации"), QObject::tr("Неверный логин или пароль"));
             delete client;
             client = NULL;

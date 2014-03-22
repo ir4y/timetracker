@@ -22,6 +22,8 @@ Client::Client(QString server_address, QString _name, QString _password, QObject
         this->get_tasks();
 
         this->current_project = this->tasks_to_projects[this->current_task];
+        if (this->current_task.length() > 0)
+            this->send_action("resume");
     }
 }
 
