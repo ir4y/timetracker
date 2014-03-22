@@ -3,6 +3,7 @@ import datetime
 import json
 from flask import Flask, request
 from flask.ext import admin
+from flask.ext import restful
 from flask.ext.admin.contrib.mongoengine import ModelView
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.mongorest import MongoRest
@@ -134,6 +135,19 @@ def upload():
     screenshot.save()
     return str(screenshot.id)
 
+
+
+system_api = restful.Api(app)
+
+class HelloWorld(restful.Resource):
+    def post(self):
+        try:
+            user = User.objects.get(**json.loads(request.data))
+            return {'user_id': str(user.id)}
+        except:
+            return {'error': 'no such user'}, 400
+
+system_api.add_resource(HelloWorld, '/api/login/')
 
 admin = admin.Admin(app, 'Simple Models')
 admin.add_view(ModelView(User))
