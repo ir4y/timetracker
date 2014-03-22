@@ -1,0 +1,22 @@
+{
+  "name": "timetracker",
+  "version": "0.0.1",
+  "homepage": "https://github.com/ir4y/timetracker",
+  "authors": [
+    "jackdevil <dg@allsol.ru>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.15",
+    "angular-rpc": "*",
+    "angular-ui-router": "0.2.10"
+  }
+}
