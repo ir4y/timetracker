@@ -1,7 +1,9 @@
 Flask==0.10.1
 Flask-Admin==1.0.7
 Flask-Celery==2.4.3
+Flask-Login==0.2.10
 Flask-MongoRest==0.1.1
+Flask-RESTful==0.2.12
 Flask-Script==0.6.7
 Flask-Views==0.2.1
 Flask-WTF==0.9.5
