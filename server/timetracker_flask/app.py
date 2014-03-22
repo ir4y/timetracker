@@ -22,27 +22,6 @@ from mongoengine import signals
 from bson.dbref import DBRef
 from bson.objectid import ObjectId
 
-class TimezoneMongoEncoder(json.JSONEncoder):
-    def default(self, value, **kwargs):
-        if isinstance(value, ObjectId):
-            return unicode(value)
-        elif isinstance(value, DBRef):
-            return value.id
-        if isinstance(value, datetime.datetime):
-            value -= datetime.timedelta(hours=8)
-            return value.isoformat()
-        if isinstance(value, datetime.date):
-            return value.strftime("%Y-%m-%d")
-        if isinstance(value, decimal.Decimal):
-            return str(value)
-        return super(MongoEncoder, self).default(value, **kwargs)
-
-
-def mongo_encoder(data):
-    return json.dumps(data, cls=TimezoneMongoEncoder)
-
-
-register('mongo_json', mongo_encoder, json.loads, 'application/json')
 
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
@@ -137,6 +116,32 @@ class UserIdAuthentication(AuthenticationBase):
 
 class Screenshot(db.Document):
     image = db.ImageField()
+
+class TimezoneMongoEncoder(json.JSONEncoder):
+    def default(self, value, **kwargs):
+        if isinstance(value, ObjectId):
+            return unicode(value)
+        elif isinstance(value, DBRef):
+            return value.id
+        if isinstance(value, datetime.datetime):
+            value -= datetime.timedelta(hours=8)
+            return value.isoformat()
+        if isinstance(value, datetime.date):
+            return value.strftime("%Y-%m-%d")
+        if isinstance(value, decimal.Decimal):
+            return str(value)
+        if isinstance(value, (User, Project, Task, Action, Screenshot, )):
+            return str(value.id)
+        return super(TimeZoneMongoEncoder, self).default(value, **kwargs)
+
+
+def mongo_encoder(data):
+    return json.dumps(data, cls=TimezoneMongoEncoder)
+
+
+register('mongo_json', mongo_encoder, json.loads, 'application/json')
+
+
 
 
 class UserResource(Resource):
