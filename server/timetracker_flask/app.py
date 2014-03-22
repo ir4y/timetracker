@@ -4,6 +4,7 @@ import json
 from flask import Flask, request
 from flask.ext import admin
 from flask.ext import restful
+from flask.ext.login import LoginManager, login_user, current_user
 from flask.ext.admin.contrib.mongoengine import ModelView
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.mongorest import MongoRest
@@ -12,10 +13,13 @@ from flask.ext.mongorest.resources import Resource
 from flask.ext.mongorest import operators as ops
 from flask.ext.mongorest import methods
 from flask.ext.mongorest.utils import MongoEncoder
+from flask.ext.mongorest.authentication import AuthenticationBase
 from kombu.serialization import register
+
 
 def mongo_encoder(data):
     return json.dumps(data, cls=MongoEncoder)
+
 
 register('mongo_json', mongo_encoder, json.loads, 'application/json')
 
@@ -28,12 +32,20 @@ app.config['UPLOAD_PATH'] = '/tmp/'
 
 db = MongoEngine(app)
 api = MongoRest(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class User(db.Document):
     name = db.StringField(max_length=40)
     email = db.StringField(max_length=40)
     password = db.StringField(max_length=40)
+
+    def is_active(self):
+        return True
+
+    def get_id(self):
+        return str(self.id)
 
     def __unicode__(self):
         return self.name
@@ -70,6 +82,19 @@ class Action(db.Document):
     user = db.ReferenceField('User')
     image = db.ReferenceField('Screenshot')
 
+
+class UserIdAuthentication(AuthenticationBase):
+    def authorized(self):
+        if 'AUTHORIZATION' in request.headers:
+            authorization = request.headers['AUTHORIZATION']
+            try:
+                login_user(User.objects.get(id=authorization))
+                return True
+            except:
+                return False
+        return False
+
+
 class Screenshot(db.Document):
     image = db.ImageField()
 
@@ -80,6 +105,10 @@ class UserResource(Resource):
 
 class ProjectResource(Resource):
     document = Project
+
+    def get_queryset(self):
+        return self.document.objects.filter(
+            users=current_user.id)
 
 
 class TaskResource(Resource):
@@ -98,24 +127,28 @@ class ActionResource(Resource):
 
 @api.register(name='user', url='/api/user/')
 class UserView(ResourceView):
+    authentication_methods = [UserIdAuthentication]
     resource = UserResource
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
 
 @api.register(name='project', url='/api/project/')
 class ProjectView(ResourceView):
+    authentication_methods = [UserIdAuthentication]
     resource = ProjectResource
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
 
 @api.register(name='task', url='/api/task/')
 class TaskView(ResourceView):
+    authentication_methods = [UserIdAuthentication]
     resource = TaskResource
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
 
 @api.register(name='action', url='/api/action/')
 class ActionView(ResourceView):
+    authentication_methods = [UserIdAuthentication]
     resource = ActionResource
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
