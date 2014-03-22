@@ -2,6 +2,7 @@ from os.path import join
 import datetime
 import json
 import pytz
+import redis
 from flask import Flask, request
 from flask.ext import admin
 from flask.ext import restful
@@ -15,6 +16,7 @@ from flask.ext.mongorest import operators as ops
 from flask.ext.mongorest import methods
 from flask.ext.mongorest.authentication import AuthenticationBase
 from kombu.serialization import register
+from mongoengine import signals
 
 from bson.dbref import DBRef
 from bson.objectid import ObjectId
@@ -41,6 +43,7 @@ def mongo_encoder(data):
 
 register('mongo_json', mongo_encoder, json.loads, 'application/json')
 
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
@@ -107,9 +110,16 @@ class Action(db.Document):
         else:
             return None
 
+    @classmethod
+    def post_save(cls, sender, document, **kwargs):
+        redis_client.publish('action', json.dumps(document._data,
+                                                  cls=TimezoneMongoEncoder))
+
     meta = {
         'ordering': ['-created']
     }
+
+signals.post_save.connect(Action.post_save, sender=Action)
 
 
 class UserIdAuthentication(AuthenticationBase):
