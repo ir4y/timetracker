@@ -3,12 +3,23 @@ TimeTrackerApp = angular.module("TimeTrackerApp", ['ui.router']);
 TimeTrackerApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
     //$locationProvider.html5Mode(true);
     $urlRouterProvider.otherwise('/projects/list/');
-    $stateProvider.state('main', {
+
+    $stateProvider
+    .state('root', {
         url: '/',
-        controller: function($scope){}
+        views: {
+            '': {
+                controller: 'RootCtrl',
+                template: '<div ui-view="content"></div>'
+            }
+        }
     });
 }]);
 
 TimeTrackerApp.controller('MainCtrl', ['$scope', function($scope){
-console.log('MainCtrl');
+
+}]);
+
+TimeTrackerApp.controller('RootCtrl', ['$scope', function($scope){
+
 }]);
