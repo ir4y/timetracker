@@ -1,21 +1,20 @@
 TimeTrackerApp = angular.module("TimeTrackerApp", ['ui.router', 'ngRpc']);
 
+angular.element(document).ready(function() {
+    angular.bootstrap(document, ['TimeTrackerApp']);
+});
+
 TimeTrackerApp.config(['$stateProvider', '$urlRouterProvider', '$rpcProvider', 
     function ($stateProvider, $urlRouterProvider, $rpcProvider) {
         $urlRouterProvider.otherwise('/');
         $rpcProvider.setUrl('ws://' + window.location.host + '/bullet');
+        $rpcProvider.connect();
     }]);
 
 TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
     $stateProvider
     .state('root', {
         url: '/',
-        resolve: {
-            socket: function($rpc) {
-                return $rpc.connect();
-                //.then(function(socket){return socket;});
-            }
-        },
         views: {
             '': {
                 controller: 'RootCtrl',
@@ -26,9 +25,5 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
 }]);
 
 
-TimeTrackerApp.controller('MainCtrl', ['$scope', function($scope){
-    console.log('MainCtrl');
-}]);
 TimeTrackerApp.controller('RootCtrl', ['$scope', function($scope){
-    console.log('RootCtrl');
 }]);

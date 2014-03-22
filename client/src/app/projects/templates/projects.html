@@ -1,0 +1,17 @@
+<div class="users_list" style="display: inline-block">
+    <h1>UserTime</h1>
+    <ul ng-repeat="user in users" style="display: inline-block">
+        {{ user.name }}
+        <li ng-repeat="time in time_list">
+            {{ time.start_date|date:"HH:mm" }} - {{ time.end_date|date:"HH:mm" }}
+        </li>
+    </ul>
+</div>
+<div class="lists" ui-view="lists" style="display: inline-block; padding-left: 20px;">
+    <h1>Projects</h1>
+    <ul>
+        <li ng-repeat="project in projects">
+            <a href="" ui-sref="root.projects.tasks({project_id: project.id})">{{ project.title }}</a>
+        </li>
+    </ul>
+</div>
