@@ -82,6 +82,13 @@ class Action(db.Document):
     user = db.ReferenceField('User')
     image = db.ReferenceField('Screenshot')
 
+    @property
+    def screenshot(self):
+        if self.image:
+            return self.image.image
+        else:
+            return None
+
 
 class UserIdAuthentication(AuthenticationBase):
     def authorized(self):
@@ -186,7 +193,14 @@ admin = admin.Admin(app, 'Simple Models')
 admin.add_view(ModelView(User))
 admin.add_view(ModelView(Project))
 admin.add_view(ModelView(Task))
-admin.add_view(ModelView(Action))
+
+class ActionView(ModelView):
+    column_list = ('task', 'created', 'action', 'user', 'screenshot', )
+
+    def image(self, item):
+        return "Hello"
+
+admin.add_view(ActionView(Action))
 admin.add_view(ModelView(Screenshot))
 
 
