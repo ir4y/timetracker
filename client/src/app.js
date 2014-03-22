@@ -1,10 +1,10 @@
-TimeTrackerApp = angular.module("TimeTrackerApp", ['ui.router']);
+TimeTrackerApp = angular.module("TimeTrackerApp", ['ui.router', 'ngRpc']);
 
-TimeTrackerApp.config(
-    ['$stateProvider', '$urlRouterProvider', '$locationProvider', 
-    function ($stateProvider, $urlRouterProvider, $locationProvider) {
-    //$locationProvider.html5Mode(true);
+TimeTrackerApp.config(['$stateProvider', '$urlRouterProvider', '$rpcProvider', 
+    function ($stateProvider, $urlRouterProvider, $rpcProvider) {
     $urlRouterProvider.otherwise('/projects/list/');
+    $rpcProvider.setUrl('ws://' + window.location.host + '/bullet');
+    $rpcProvider.connect();
 
     $stateProvider
     .state('root', {
