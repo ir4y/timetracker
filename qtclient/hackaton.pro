@@ -15,12 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp \
     client.cpp \
     mainwindow.cpp \
-    taskselectdialog.cpp
+    taskselectdialog.cpp \
+    authorizationdialog.cpp
 
 HEADERS  += \
     client.h \
     mainwindow.h \
-    taskselectdialog.h
+    taskselectdialog.h \
+    authorizationdialog.h
 
 FORMS += \
-    taskselectdialog.ui
+    taskselectdialog.ui \
+    authorizationdialog.ui

@@ -19,17 +19,22 @@
 #include <QScreen>
 
 
+#define PERIODIC_TIME_DEFAULT (10 * 60 * 1000)
+
+
 class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(QString server_address, QObject *parent = 0);
+    explicit Client(QString server_address, QString name, QString password, QObject *parent = 0);
 
-    void authenticate(QString login, QString password);
+    void authenticate();
     void sendScreen(); // 1 - upload image; 2 - send data
     void updateTask(QString project, QString task);
     void suspend();
     void change_status(QString action);
+    bool is_authenticated();
+    bool is_active();
 
 
     QString get_current_project() { return this->projects[this->current_project]; }
@@ -41,7 +46,7 @@ public:
 signals:
     
 private slots:
-    void timer_slot(QPrivateSignal s);
+    void timer_slot();
 
 private:
     QByteArray request_get(QString url);
@@ -49,14 +54,19 @@ private:
 
     void get_tasks();
     void get_projects();
+    void send_action(QString action);
 
     QString get_task_id_by_name(QString task_name, QString project_id);
     QString get_project_id_by_name(QString name);
 
     QTimer* timer;
     QNetworkAccessManager* manager;
-    QString sessionId;
+    QString name;
+    QString password;
+    QString session_id;
     QString server_address;
+    bool active;
+    int timer_remaining_time;
 
     // ids
     QString current_project;

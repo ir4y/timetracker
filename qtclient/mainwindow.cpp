@@ -4,9 +4,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject(parent)
 {
     this->icon_menu = new QMenu();
-    QAction* suspend_resume_action = new QAction(tr("Suspend / Resume"), this);
-    connect(suspend_resume_action, SIGNAL(triggered()), this, SLOT(suspend_resume()));
-    this->icon_menu->addAction(suspend_resume_action);
+    this->suspend_resume_action = new QAction(tr("Suspend"), this);
+    connect(this->suspend_resume_action, SIGNAL(triggered()), this, SLOT(suspend_resume()));
+    this->icon_menu->addAction(this->suspend_resume_action);
 
     QAction* task_select_action = new QAction(tr("Select task"), this);
     connect(task_select_action, SIGNAL(triggered()), this, SLOT(task_select()));
@@ -30,7 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::suspend_resume()
 {
-
+    client->suspend();
+    if (client->is_active())
+        this->suspend_resume_action->setText("Suspend");
+    else
+        this->suspend_resume_action->setText("Resume");
 }
 
 void MainWindow::task_select()

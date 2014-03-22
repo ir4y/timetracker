@@ -1,25 +1,33 @@
 #include "client.h"
 
-Client::Client(QString server_address, QObject *parent) :
+Client::Client(QString server_address, QString _name, QString _password, QObject *parent) :
     QObject(parent)
 {
     this->manager = new QNetworkAccessManager(this);
     this->server_address = server_address;
+    this->name = _name;
+    this->password = _password;
 
-    this->timer = new QTimer(this);
-    connect(this->timer, SIGNAL(timeout(QPrivateSignal)),
-            this, SLOT(timer_slot(QPrivateSignal)));
-    this->timer->start(10 * 60 * 1000);
+    this->authenticate();
 
-    this->get_projects();
-    this->get_tasks();
+    if (this->is_authenticated())
+    {
+        this->active = true;
+        this->timer = new QTimer(this);
+        connect(this->timer, SIGNAL(timeout()),
+                this, SLOT(timer_slot()));
+        this->timer->start(PERIODIC_TIME_DEFAULT);
 
-    this->sendScreen();
+        this->get_projects();
+        this->get_tasks();
+    }
 }
 
-void Client::timer_slot(QPrivateSignal)
+void Client::timer_slot()
 {
+    this->timer->stop();
     this->sendScreen();
+    this->timer->start(PERIODIC_TIME_DEFAULT);
 }
 
 
@@ -69,6 +77,7 @@ void Client::get_projects()
 QByteArray Client::request_get(QString url)
 {
     QNetworkRequest request(url);
+    request.setRawHeader("AUTHORIZATION", this->session_id.toUtf8());
     QNetworkReply* reply = this->manager->get(request);
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
@@ -82,6 +91,8 @@ QByteArray Client::request_post(QString url, QByteArray &data, QString content_t
 {
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, content_type_header);
+    if (this->session_id.length() > 0)
+        request.setRawHeader("AUTHORIZATION", this->session_id.toUtf8());
     QNetworkReply* reply = this->manager->post(request, data);
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
@@ -118,10 +129,13 @@ void Client::sendScreen()
     QString url = this->server_address + "/api/upload/";
     QString image_url = this->request_post(url, buffer_data, "image/png");
 
+    qDebug() << image_url;
+
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
     document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
     document.insert("image", QJsonValue::fromVariant(image_url));
+    document.insert("action", QJsonValue::fromVariant("screenshot"));
     QByteArray data = QJsonDocument(document).toJson();
     url = this->server_address + "/api/action/";
 
@@ -135,6 +149,15 @@ void Client::updateTask(QString project, QString task)
     QString task_id = this->get_task_id_by_name(task, project_id);
 
     this->current_project = project_id;
+
+    if (this->current_task != task_id)
+    {   // task was changed
+        // send suspend
+        this->send_action("suspend");
+        this->current_task = task_id;
+        this->send_action("resume");
+    }
+
     this->current_task = task_id;
 }
 
@@ -173,7 +196,6 @@ QString Client::get_task_id_by_name(QString task_name, QString project_id)
     QByteArray data = QJsonDocument(send).toJson();
     QString url = this->server_address + "/api/task/";
     QByteArray response = this->request_post(url, data);
-    qDebug() << response;
 
     QJsonDocument document = QJsonDocument::fromJson(response);
     QJsonObject object = document.object();
@@ -183,6 +205,61 @@ QString Client::get_task_id_by_name(QString task_name, QString project_id)
     this->tasks[result] = task_name;
     this->tasks_to_projects[result] = project_id;
     return result;
+}
+
+void Client::authenticate()
+{
+    QJsonObject send;
+    send.insert("name", QJsonValue::fromVariant(this->name));
+    send.insert("password", QJsonValue::fromVariant(this->password));
+    QByteArray data = QJsonDocument(send).toJson();
+    QString url = this->server_address + "/api/login/";
+    QByteArray response = this->request_post(url, data);
+
+    QJsonDocument document = QJsonDocument::fromJson(response);
+    this->session_id = document.object()["user_id"].toString();
+}
+
+bool Client::is_authenticated()
+{
+    return this->session_id.length() > 0;
+}
+
+bool Client::is_active()
+{
+    return this->active;
+}
+
+void Client::suspend()
+{
+    QString next_state;
+    if (this->active)
+    {
+        next_state = "suspend";
+        this->active = false;
+        this->timer_remaining_time = this->timer->remainingTime();
+        this->timer->stop();
+    }
+    else
+    {
+        next_state = "resume";
+        this->active = true;
+        this->timer->start(this->timer_remaining_time);
+    }
+
+    this->send_action(next_state);
+}
+
+void Client::send_action(QString action)
+{
+    QJsonObject document;
+    document.insert("task", QJsonValue::fromVariant(this->current_task));
+    document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
+    document.insert("action", QJsonValue::fromVariant(action));
+    QByteArray data = QJsonDocument(document).toJson();
+    QString url = this->server_address + "/api/action/";
+
+    this->request_post(url, data);
 }
 
 Client* client = NULL;

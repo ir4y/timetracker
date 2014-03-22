@@ -25,6 +25,7 @@ private slots:
 private:
     QSystemTrayIcon* icon;
     QMenu* icon_menu;
+    QAction* suspend_resume_action;
 
     TaskSelectDialog* task_dialog;
 };
