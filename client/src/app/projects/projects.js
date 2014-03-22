@@ -21,8 +21,8 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
                 var start_date = new Date(parseInt($stateParams.start_date)),
                     end_date = new Date(parseInt($stateParams.end_date));
                 return $rpc.send('tasks.get_actions_list', [
-                    start_date.toISOString(), 
-                    end_date.toISOString() 
+                    end_date.toLocaleString(),
+                    start_date.toLocaleString(), 
                 ]).then(
                     function(response) {
                         return response.result;
@@ -33,9 +33,11 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         views: {
             'content': {
                 templateUrl: '/static/src/app/projects/templates/projects.html',
-                controller: ['$scope', 'projects', 'users',  function($scope, projects, users){
+                controller: ['$stateParams', '$scope', 'projects', 'users', 'actions',
+                function($stateParams, $scope, projects, users, actions){
                     $scope.projects = projects;
                     $scope.users = users;
+                    $scope.actions = actions;
 
                     var gen_time_list = function(start_date, end_date, interval) {
                         interval = interval || 10;
@@ -52,8 +54,8 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
                         return time_list;
                     };
 
-                    var start_date = new Date(),
-                        end_date = start_date.getTime() - 60*60*1000;
+                    var start_date = new Date(parseInt($stateParams.start_date)),
+                        end_date = new Date(parseInt($stateParams.end_date));
 
                     $scope.time_list = gen_time_list(start_date, end_date);
 
@@ -84,3 +86,22 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
 TimeTrackerApp.controller('TasksCtrl', ['$scope', 'tasks', function($scope, tasks){ 
     $scope.tasks = tasks;
 }]);
+
+TimeTrackerApp.filter('user_actions', function() {
+    return function(actions, user) {
+        return actions.filter(function(action){return action.user==user.id});
+  };
+});
+
+TimeTrackerApp.filter('in_period', function() {
+    return function(actions, time_period) {
+        var start_date = new Date(time_period.start_date),
+            end_date = new Date(time_period.end_date);
+        return actions.filter(function(action){ 
+            var date = new Date(action.created);
+            console.log(date, end_date, start_date);
+            return date >= end_date && date <= start_date; 
+        });
+  };
+});
+
