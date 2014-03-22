@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         },
       dist: {
         src: ['vendor/angular/angular.js', 'vendor/angular-rpc/src/angular-rpc.js', 'vendor/angular-ui-router/release/angular-ui-router.js'],
-        dest: 'src/main.js',
+        dest: 'src/app/application.js',
       },
     },
     watch: {
