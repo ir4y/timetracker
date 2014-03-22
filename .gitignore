@@ -1,5 +1,4 @@
 *sublime*
-client/node_modulesrebar
 priv/bower_components/
 .eunit
 deps
