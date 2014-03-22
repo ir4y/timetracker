@@ -13,7 +13,7 @@ from flask.ext.mongorest import methods
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
 app.config['MONGODB_SETTINGS'] = {'DB': 'timetracker'}
-
+app.config['CELERY_BROKER_URL'] = 'amqp://'
 
 db = MongoEngine(app)
 api = MongoRest(app)
@@ -99,6 +99,7 @@ class TaskView(ResourceView):
     resource = TaskResource
     methods = [methods.Create, methods.Update, methods.Fetch, methods.List]
 
+
 @api.register(name='action', url='/api/action/')
 class ActionView(ResourceView):
     resource = ActionResource
@@ -110,9 +111,6 @@ admin.add_view(ModelView(User))
 admin.add_view(ModelView(Project))
 admin.add_view(ModelView(Task))
 admin.add_view(ModelView(Action))
-
-
-
 
 
 if __name__ == '__main__':
