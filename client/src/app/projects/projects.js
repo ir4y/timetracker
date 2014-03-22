@@ -3,21 +3,16 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
     .state('root.projects', {
         abstract: true,
         url: 'projects/',
-        resolve: {
-            projects: [ '$rpc', function($rpc) {
-                //$rpc.send().then(
-                    //function(response){
-                        //return response.result;
-                    //},
-                    //function(response){
-                        //console.log('Error', response);
-                    //}
-                //)
-            }]
-        },
         views: {
             'content': {
                 templateUrl: '/static/src/app/projects/templates/projects-base.html',
+                controller: ['$scope', '$rpc', function($scope, $rpc){
+                    $rpc.send('tasks.get_projects_list', {}).then( 
+                        function(response) { 
+                            $scope.projects = response.result;
+                        }
+                    );
+                }]
             }
         }
     })
@@ -32,6 +27,5 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
     });
 }]);
 
-TimeTrackerApp.controller('ProjectsListCtrl', ['$scope', function($scope){
-    console.log($scope);
+TimeTrackerApp.controller('ProjectsListCtrl', ['$scope', function($scope){ console.log($scope);
 }]);
