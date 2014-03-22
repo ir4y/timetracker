@@ -180,7 +180,6 @@ def upload():
     return str(screenshot.id)
 
 
-
 system_api = restful.Api(app)
 
 
@@ -192,8 +191,7 @@ class LoginResource(restful.Resource):
                 user=user).order_by('-created').first()
             return {'user_id': str(user.id),
                     'last_task_id': str(last_action.task.id)
-                                    if last_action
-                                    else None}
+                    if last_action else None}
         except:
             return {'error': 'no such user'}, 400
 
@@ -204,11 +202,10 @@ admin.add_view(ModelView(User))
 admin.add_view(ModelView(Project))
 admin.add_view(ModelView(Task))
 
+
 class ActionView(ModelView):
     column_list = ('task', 'created', 'action', 'user', 'screenshot', )
 
-    def image(self, item):
-        return "Hello"
 
 admin.add_view(ActionView(Action))
 admin.add_view(ModelView(Screenshot))
