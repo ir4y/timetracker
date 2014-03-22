@@ -2,7 +2,7 @@
     <h1>UserTime</h1>
     <ul ng-repeat="user in users" style="display: inline-block">
         {{ user.name }}
-        <li ng-repeat="time in time_list" ng-class="{action: (actions|user_actions:user|in_period:time).length}">
+        <li ng-repeat="time in time_list" class="actions" ng-class="{use: (actions|user_actions:user|in_period:time).length}">
             {{ time.start_date|date:"HH:mm" }} - {{ time.end_date|date:"HH:mm" }}
         </li>
     </ul>

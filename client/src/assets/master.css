@@ -1,34 +1,3 @@
-.project-user-avatar {
-  display: inline-block;
-  vertical-align: middle;
-  margin: -3px 4px 0 0;
+.use {
+    color: red;
 }
-
-.progress-bar {
-  text-align: left;
-}
-.project-user-work-progress {
-  position: absolute;
-  display: block;
-  width: auto;
-  height: auto;
-  margin: -1px;
-  padding: 0;
-  overflow: visible;
-  clip: auto;
-  border: 0;
-  bottom: 0px;
-  color: #000;
-  font-size: 12px;
-}
-.progress-bar:hover .project-user-work-progress {
-  display: block;
-}
-._no-border {
-  border: none;
-}
-._no-border .list-group-item {
-    border-left: none;
-    border-top: none;
-    border-right: none;
-  }

@@ -33,11 +33,14 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         views: {
             'content': {
                 templateUrl: '/static/src/app/projects/templates/projects.html',
-                controller: ['$stateParams', '$scope', 'projects', 'users', 'actions',
-                function($stateParams, $scope, projects, users, actions){
+                controller: ['$stateParams', '$scope', 'projects', 'users', 'actions', '$rpc',
+                function($stateParams, $scope, projects, users, actions, $rpc){
                     $scope.projects = projects;
                     $scope.users = users;
                     $scope.actions = actions;
+                    $rpc.subscribe(['action']).$on('socket_event', function(response){
+                        console.log(response);
+                    });
 
                     var gen_time_list = function(start_date, end_date, interval) {
                         interval = interval || 10;

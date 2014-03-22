@@ -8,8 +8,9 @@ module.exports = function(grunt) {
         separator: ';',
       },
       dist: {
-        src: ['vendor/jquery/dist/jquery.js',
-              'vendor/bootstrap/dist/js/bootstrap.js',
+        src: [
+              //'vendor/jquery/dist/jquery.js',
+              //'vendor/bootstrap/dist/js/bootstrap.js',
               'vendor/angular/angular.js',
               'vendor/angular-rpc/src/angular-rpc.js',
               'vendor/angular-ui-router/release/angular-ui-router.js',
@@ -17,8 +18,10 @@ module.exports = function(grunt) {
         dest: 'application.js',
       },
       css : {
-        src : ['vendor/bootstrap/dist/css/bootstrap.css',
-              'src/assets/master.css'],
+        src : [
+              //'vendor/bootstrap/dist/css/bootstrap.css',
+              'src/assets/master.css'
+              ],
         dest : 'main.css'
 
       }
