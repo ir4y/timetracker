@@ -39,7 +39,10 @@ void Client::get_tasks()
         this->tasks_to_projects[obj["id"].toString()] = obj["project"].toString();
     }
 
-    this->current_task = this->tasks.keys()[0];
+    if (this->tasks.count() > 0)
+        this->current_task = this->tasks.keys()[0];
+    else
+        this->current_task = "";
 }
 
 void Client::get_projects()
@@ -57,7 +60,10 @@ void Client::get_projects()
         this->projects[obj["id"].toString()] = obj["title"].toString();
     }
 
-    this->current_project = this->projects.keys()[0];
+    if (this->projects.count() > 0)
+        this->current_project = this->projects.keys()[0];
+    else
+        this->current_project = "";
 }
 
 QByteArray Client::request_get(QString url)
@@ -110,17 +116,73 @@ void Client::sendScreen()
     image.save(&buffer, "PNG");
 
     QString url = this->server_address + "/api/upload/";
-    this->request_post(url, buffer_data, "image/png");
+    QString image_url = this->request_post(url, buffer_data, "image/png");
 
-    // GET IMAGE URL
-
-    QString image_url;
     QJsonObject document;
     document.insert("task", QJsonValue::fromVariant(this->current_task));
     document.insert("user", QJsonValue::fromVariant("532d1d7172905d55e266f494"));
     document.insert("image", QJsonValue::fromVariant(image_url));
     QByteArray data = QJsonDocument(document).toJson();
-    url = this->server_address + "/api/screen/";
+    url = this->server_address + "/api/action/";
 
     this->request_post(url, data);
 }
+
+
+void Client::updateTask(QString project, QString task)
+{
+    QString project_id = this->get_project_id_by_name(project);
+    QString task_id = this->get_task_id_by_name(task, project_id);
+
+    this->current_project = project_id;
+    this->current_task = task_id;
+}
+
+
+QString Client::get_project_id_by_name(QString name)
+{
+    if (this->projects[this->current_project] == name)
+        return this->current_project;
+
+    foreach (QString id, this->projects.keys())
+        if (this->projects[id] == name)
+            return id;
+
+    return "";
+}
+
+
+QString Client::get_task_id_by_name(QString task_name, QString project_id)
+{
+    if (this->tasks[this->current_task] == task_name)
+        return this->current_task;
+
+    QStringList results;
+    foreach (QString id, this->tasks.keys())
+        if (this->tasks[id] == task_name)
+            results.append(id);
+
+    foreach (QString id, results)
+        if (this->tasks_to_projects[id] == project_id)
+            return id;
+
+    // okay, we need to create a new task
+    QJsonObject send;
+    send.insert("project", QJsonValue::fromVariant(project_id));
+    send.insert("title", QJsonValue::fromVariant(task_name));
+    QByteArray data = QJsonDocument(send).toJson();
+    QString url = this->server_address + "/api/task/";
+    QByteArray response = this->request_post(url, data);
+    qDebug() << response;
+
+    QJsonDocument document = QJsonDocument::fromJson(response);
+    QJsonObject object = document.object();
+    QJsonArray response_data = object["data"].toArray();
+
+    QString result = response_data[0].toObject()["id"].toString();
+    this->tasks[result] = task_name;
+    this->tasks_to_projects[result] = project_id;
+    return result;
+}
+
+Client* client = NULL;

@@ -14,10 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     client.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    taskselectdialog.cpp
 
 HEADERS  += \
     client.h \
-    mainwindow.h
+    mainwindow.h \
+    taskselectdialog.h
 
-FORMS +=
+FORMS += \
+    taskselectdialog.ui

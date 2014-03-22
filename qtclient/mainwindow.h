@@ -7,6 +7,8 @@
 #include <QIcon>
 #include <QAction>
 
+#include "taskselectdialog.h"
+
 class MainWindow : public QObject
 {
     Q_OBJECT
@@ -18,10 +20,13 @@ private slots:
     void suspend_resume();
     void task_select();
     void quit();
+    void dialog_accepted();
     
 private:
     QSystemTrayIcon* icon;
     QMenu* icon_menu;
+
+    TaskSelectDialog* task_dialog;
 };
 
 #endif // MAINWINDOW_H

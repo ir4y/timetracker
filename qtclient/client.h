@@ -32,8 +32,11 @@ public:
     void change_status(QString action);
 
 
-    QString get_project() { return this->projects[this->current_project]; }
-    QString get_task() { return this->tasks[this->current_task]; }
+    QString get_current_project() { return this->projects[this->current_project]; }
+    QString get_current_task() { return this->tasks[this->current_task]; }
+
+    QStringList get_projects_list() { return this->projects.values(); }
+    QStringList get_tasks_list() { return this->tasks.values(); }
 
 signals:
     
@@ -44,23 +47,11 @@ private:
     QByteArray request_get(QString url);
     QByteArray request_post(QString url, QByteArray& data, QString content_type_header="application/json");
 
-    void sendScreen2();
     void get_tasks();
     void get_projects();
 
-    typedef void (Client::* HandlerPointer)(QJsonDocument&);
-    QHash<QString, HandlerPointer> handlers;
-
-    void set_handlers();
-
-    // handlers
-    void handler_authenticate(QJsonDocument& data);
-    void handler_sendScreen(QJsonDocument& data);
-    void handler_sendScreen2(QJsonDocument& data);
-    void handler_updateTask(QJsonDocument& data);
-    void handler_suspend(QJsonDocument& data);
-    void handler_resume(QJsonDocument& data);
-
+    QString get_task_id_by_name(QString task_name, QString project_id);
+    QString get_project_id_by_name(QString name);
 
     QTimer* timer;
     QNetworkAccessManager* manager;
@@ -78,5 +69,8 @@ private:
     // id -- id
     QHash<QString, QString> tasks_to_projects;
 };
+
+
+extern Client* client;
 
 #endif // CLIENT_H

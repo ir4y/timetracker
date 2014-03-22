@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QIcon icon_image("heart.svg");
     this->icon->setIcon(icon_image);
     this->icon->show();
+
+    this->task_dialog = NULL;
 }
 
 void MainWindow::suspend_resume()
@@ -33,10 +35,23 @@ void MainWindow::suspend_resume()
 
 void MainWindow::task_select()
 {
+    if (this->task_dialog)
+    {
+        this->task_dialog->close();
+        this->task_dialog->deleteLater();
+    }
 
+    this->task_dialog = new TaskSelectDialog();
+    this->task_dialog->show();
+    connect(this->task_dialog, SIGNAL(accepted()), this, SLOT(dialog_accepted()));
+}
+
+void MainWindow::dialog_accepted()
+{
+    client->updateTask(this->task_dialog->get_project(), this->task_dialog->get_task());
 }
 
 void MainWindow::quit()
 {
-
+    QApplication::exit();
 }
