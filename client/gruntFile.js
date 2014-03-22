@@ -17,14 +17,15 @@ module.exports = function(grunt) {
         dest: 'application.js',
       },
       css : {
-        src : ['vendor/bootstrap/dist/css/bootstrap.css'],
+        src : ['vendor/bootstrap/dist/css/bootstrap.css',
+              'src/assets/master.css'],
         dest : 'main.css'
 
       }
     },
     watch: {
       dev: {
-        files: ['src/**/*.js', 'vendor/**/*.js'],
+        files: ['src/**/*.js', 'vendor/**/*.js', 'src/**/*.css'],
         tasks: ['concat'],
         options: {
           spawn: false,
