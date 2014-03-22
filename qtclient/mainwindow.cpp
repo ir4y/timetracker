@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(task_select_action, SIGNAL(triggered()), this, SLOT(task_select()));
     this->icon_menu->addAction(task_select_action);
 
+    QAction* change_user_action = new QAction(tr("Change user"), this);
+    connect(change_user_action, SIGNAL(triggered()), this, SLOT(change_user()));
+    this->icon_menu->addAction(change_user_action);
+
     this->icon_menu->addSeparator();
 
     QAction* quit_action = new QAction(tr("Quit"), this);
@@ -60,24 +64,56 @@ void MainWindow::quit()
     QApplication::exit();
 }
 
-
-void MainWindow::authorization_loop()
+void MainWindow::change_user()
 {
+    QSettings settings;
+    settings.remove("login");
+    settings.remove("password");
+    MainWindow::authorization_loop();
+}
+
+
+bool MainWindow::authorization_loop()
+{
+    QSettings settings;
     for (;;)
     {
-        AuthorizationDialog* dialog = new AuthorizationDialog();
-        dialog->exec();
+        QString login = settings.value("login", "").toString();
+        QString password = settings.value("password", "").toString();
 
-        client = new Client("http://127.0.0.1:5000", dialog->get_login(), dialog->get_password());
+        if (login.length() == 0 || password.length() == 0)
+        {
+            AuthorizationDialog* dialog = new AuthorizationDialog();
+            int status = dialog->exec();
+
+            if (status == 0)
+            {
+                QApplication::exit();
+                return false;
+            }
+
+            login = dialog->get_login();
+            password = dialog->get_password();
+            delete dialog;
+        }
+
+        if (client)
+            delete client;
+
+        client = new Client("http://127.0.0.1:5000", login, password);
         if (client->is_authenticated())
         {
+            settings.setValue("login", login);
+            settings.setValue("password", password);
             break;
         }
         else
         {
             QMessageBox::warning(NULL, QObject::tr("Ошибка авторизации"), QObject::tr("Неверный логин или пароль"));
             delete client;
-            delete dialog;
+            client = NULL;
         }
     }
+
+    return true;
 }

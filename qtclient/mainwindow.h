@@ -18,13 +18,14 @@ class MainWindow : public QObject
     
 public:
     explicit MainWindow(QWidget *parent = 0);
-    static void authorization_loop();
+    static bool authorization_loop();
 
 private slots:
     void suspend_resume();
     void task_select();
     void quit();
     void dialog_accepted();
+    void change_user();
     
 private:
     QSystemTrayIcon* icon;

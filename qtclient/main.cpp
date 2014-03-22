@@ -9,7 +9,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("allsol");
     QCoreApplication::setApplicationName("timetracker");
 
-    MainWindow::authorization_loop();
+    if (!MainWindow::authorization_loop())
+        return 0;
+
     MainWindow window;
     return a.exec();
 }
