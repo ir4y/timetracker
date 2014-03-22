@@ -38,8 +38,17 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
                     $scope.projects = projects;
                     $scope.users = users;
                     $scope.actions = actions;
-                    $rpc.subscribe(['action']).$on('socket_event', function(response){
-                        console.log(response);
+                    $rpc.subscribe(['action']).$on('socket_event', function(event,response){
+                        var edit = false;
+                        angular.forEach($scope.actions, function(action, index){
+                            if (action.id == response.id){
+                                $scope.actions[$index] = response;
+                                edit = true;
+                            }
+                        });
+                        $scope.$apply(function(){
+                            if (!edit) { $scope.actions.push(response); }
+                        });
                     });
 
                     var gen_time_list = function(start_date, end_date, interval) {
@@ -102,7 +111,6 @@ TimeTrackerApp.filter('in_period', function() {
             end_date = new Date(time_period.end_date);
         return actions.filter(function(action){ 
             var date = new Date(action.created);
-            console.log(date, end_date, start_date);
             return date >= end_date && date <= start_date; 
         });
   };
