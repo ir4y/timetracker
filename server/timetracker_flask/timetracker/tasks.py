@@ -1,6 +1,7 @@
 from celery import Celery
-from app import app as flask_app
-from app import User, Project, Task, Action
+
+from timetracker import app as flask_app
+from timetracker.models import User, Project, Task, Action
 
 
 def make_celery(app):

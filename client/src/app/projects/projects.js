@@ -4,14 +4,14 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         url: 'projects/:start_date/:end_date/',
         resolve: {
             projects: function($rpc){
-                return $rpc.send('tasks.get_projects_list', {}).then(
+                return $rpc.send('timetracker.tasks.get_projects_list', {}).then(
                     function(response) { 
                         return response.result;
                     }
                 );
             },
             users: function($rpc){
-                return $rpc.send('tasks.get_users_list', {}).then(
+                return $rpc.send('timetracker.tasks.get_users_list', {}).then(
                     function(response) {
                         return response.result;
                     }
@@ -20,7 +20,7 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
             actions: function($rpc, $stateParams){
                 var start_date = new Date(parseInt($stateParams.start_date)),
                     end_date = new Date(parseInt($stateParams.end_date));
-                return $rpc.send('tasks.get_actions_list', [
+                return $rpc.send('timetracker.tasks.get_actions_list', [
                     end_date.toLocaleString(),
                     start_date.toLocaleString(), 
                 ]).then(
@@ -79,7 +79,7 @@ TimeTrackerApp.config(['$stateProvider', function($stateProvider) {
         url: ':project_id/',
         resolve: {
             tasks: function($rpc, $stateParams){
-                return $rpc.send('tasks.get_tasks_for_project', [$stateParams.project_id]).then(
+                return $rpc.send('timetracker.tasks.get_tasks_for_project', [$stateParams.project_id]).then(
                     function(response) {
                         return response.result;
                     }
